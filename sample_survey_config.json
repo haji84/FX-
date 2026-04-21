@@ -1,0 +1,26 @@
+{
+  "url": "https://example.com/survey",
+  "fields": [
+    {
+      "label": "氏名",
+      "selector": {"by": "name", "value": "full_name"},
+      "action": "type",
+      "value": "山田 太郎"
+    },
+    {
+      "label": "メール",
+      "selector": {"by": "name", "value": "email"},
+      "action": "type",
+      "value": "taro@example.com"
+    },
+    {
+      "label": "同意チェック",
+      "selector": {"by": "id", "value": "agree"},
+      "action": "click"
+    }
+  ],
+  "submit": {
+    "selector": {"by": "css", "value": "button[type='submit']"}
+  },
+  "confirm_text": "送信が完了しました"
+}
