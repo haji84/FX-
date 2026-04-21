@@ -88,7 +88,7 @@ def create_driver(headless: bool) -> webdriver.Chrome:
     return webdriver.Chrome(service=service, options=options)
 
 
-def run(config: dict[str, Any], dry_run: bool, headless: bool, timeout: int) -> None:
+def run(config: dict[str, Any], headless: bool, timeout: int, wait_submit: bool) -> None:
     driver = create_driver(headless=headless)
     wait = WebDriverWait(driver, timeout)
     try:
@@ -103,11 +103,15 @@ def run(config: dict[str, Any], dry_run: bool, headless: bool, timeout: int) -> 
         submit = config.get("submit")
         if submit:
             by, value = selector_to_by(submit["selector"])
-            if dry_run:
-                print("dry-run: 送信しません")
-            else:
-                wait.until(EC.element_to_be_clickable((by, value))).click()
-                print("送信を実行しました")
+            submit_button = wait.until(EC.element_to_be_clickable((by, value)))
+            driver.execute_script(
+                "arguments[0].style.outline='3px solid #ff4d4f';"
+                "arguments[0].scrollIntoView({behavior:'smooth', block:'center'});",
+                submit_button,
+            )
+            print("入力完了: 送信は人間が押してください（ボタンを赤枠で強調表示しています）")
+            if wait_submit:
+                input("送信後に Enter を押してください...")
 
         if confirm := config.get("confirm_text"):
             try:
@@ -174,7 +178,7 @@ def parse_args() -> argparse.Namespace:
     run_parser = sub.add_parser("run", help="設定ファイルで実行")
     run_parser.add_argument("config", type=Path, help="設定JSONファイルパス")
     run_parser.add_argument("--no-headless", action="store_true", help="ブラウザを表示")
-    run_parser.add_argument("--apply", action="store_true", help="実際に送信")
+    run_parser.add_argument("--wait-submit", action="store_true", help="手動送信後の確認待ちをする")
     run_parser.add_argument("--timeout", type=int, default=10, help="要素待機秒数")
 
     return parser.parse_args()
@@ -191,9 +195,9 @@ def main() -> None:
         config = load_config(args.config)
         run(
             config=config,
-            dry_run=not args.apply,
             headless=not args.no_headless,
             timeout=args.timeout,
+            wait_submit=args.wait_submit,
         )
         return
 

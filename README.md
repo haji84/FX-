@@ -31,10 +31,11 @@ export SURVEY_EMAIL='taro@example.com'
 python survey_auto_apply.py run my_survey.json
 ```
 
-> デフォルトは dry-run（送信しない）です。実送信は `--apply` を付けます。
+入力完了後、送信ボタンを赤枠で強調表示します。  
+**送信ボタンは人間が押す前提**です。
 
 ```bash
-python survey_auto_apply.py run my_survey.json --apply
+python survey_auto_apply.py run my_survey.json --no-headless --wait-submit
 ```
 
 ## 主な改善点
@@ -42,6 +43,7 @@ python survey_auto_apply.py run my_survey.json --apply
 - ChromeDriver は `webdriver-manager` で自動取得（手動配置不要）
 - `init` サブコマンドで設定ファイルを対話作成
 - `env:変数名` 形式で、設定ファイルに個人情報を直書きしない運用
+- 自動送信は行わず、最終送信は人間が実施する安全運用
 
 ## 参考
 
